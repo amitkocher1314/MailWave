@@ -14,13 +14,11 @@ const EmailInboxDetail = () => {
   useEffect(() => {
     const fetchEmail = async () => {
       try {
-        console.log(`Fetching email with id: ${id}`);
         const response = await fetch(`https://authentication-mailwave-default-rtdb.firebaseio.com/emails/${id}.json`);
         if (!response.ok) {
           throw new Error("Failed to fetch email details");
         }
         const data = await response.json();
-        console.log('Fetched email data:', data);
         setEmail(data);
         if (!data.read) {
           dispatch(markAsRead(id));

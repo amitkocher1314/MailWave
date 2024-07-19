@@ -10,8 +10,14 @@ const messagesSlice = createSlice({
   initialState,
   reducers: {
     setMessages(state, action) {
-      state.messages = action.payload;
-      state.unreadCount = action.payload.filter(msg => !msg.read).length;
+      const newMessages = action.payload;
+      const existingIds = state.messages.map(msg => msg.id);
+      const hasChanges = newMessages.some(msg => !existingIds.includes(msg.id)) || 
+                         newMessages.length !== state.messages.length;
+      if (hasChanges) {
+        state.messages = newMessages;
+        state.unreadCount = newMessages.filter(msg => !msg.read).length;
+      }
     },
     markAsRead(state, action) {
       const messageId = action.payload;

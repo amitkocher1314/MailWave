@@ -8,6 +8,8 @@ const Inbox = () => {
   const { messages, unreadCount } = useSelector(state => state.messages);
 
   useEffect(() => {
+    let intervalId;
+
     const fetchInboxEmails = async () => {
       try {
         const response = await fetch("https://authentication-mailwave-default-rtdb.firebaseio.com/emails.json");
@@ -29,7 +31,14 @@ const Inbox = () => {
       }
     };
 
+    // Initial fetch
     fetchInboxEmails();
+
+    // Polling every 2 seconds
+    intervalId = setInterval(fetchInboxEmails, 2000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
   }, [dispatch]);
 
   return (
