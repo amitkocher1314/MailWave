@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import ComposeEmail from "./components/ComposeEmail";
@@ -6,8 +6,12 @@ import Layout from "./components/Layout";
 import Inbox from "./components/Inbox";
 import Sent from "./components/Sent";
 import Starred from "./components/Starred";
+import EmailSentDetail from "./components/EmailSentDetail";
+import { useSelector } from "react-redux";
 
 function App() {
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
   return (
     <Router>
       <Switch>
@@ -17,7 +21,7 @@ function App() {
         <Route path="/signin">
           <SignIn />
         </Route>
-        <Route path="/">
+        {isAuthenticated ? (
           <Layout>
             <Switch>
               <Route path="/composeEmail">
@@ -26,19 +30,23 @@ function App() {
               <Route path="/inbox">
                 <Inbox />
               </Route>
-              <Route path="/sent">
+              <Route path="/sent" exact>
                 <Sent />
+              </Route>
+              <Route path="/sent/:id">
+                <EmailSentDetail />
               </Route>
               <Route path="/starred">
                 <Starred />
               </Route>
-              {/* Redirect to inbox by default */}
               <Route path="/">
                 <Inbox />
               </Route>
             </Switch>
           </Layout>
-        </Route>
+        ) : (
+          <Redirect to="/signin" />
+        )}
       </Switch>
     </Router>
   );

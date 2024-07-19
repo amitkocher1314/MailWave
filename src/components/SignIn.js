@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link,useHistory } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice";
 const SignIn = () =>{
   const[email,setEmail] = useState('');
   const[password,setPassword] = useState('');
    const history = useHistory();
-   
+   const dispatch = useDispatch();
   const handleSubmit = async (event) => {
     event.preventDefault();
      try{
@@ -31,6 +32,7 @@ const SignIn = () =>{
      localStorage.setItem('authToken',data.idToken);
      localStorage.setItem('userId',data.localId);
      localStorage.setItem('userEmail',data.email);
+     dispatch(login());
      history.replace('/composeEmail');
      }
      catch(error){

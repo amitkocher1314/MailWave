@@ -14,7 +14,7 @@ const ComposeEmail = () => {
     setEditorState(state);
   };
 
-  const handleSend = () => {
+  const handleSend = async() => {
     const contentState = editorState.getCurrentContent();
     const rawContent = JSON.stringify(convertToRaw(contentState));
     const emailData = {
@@ -23,8 +23,29 @@ const ComposeEmail = () => {
       bcc,
       subject,
       body: rawContent,
+      timestamp: new Date().toISOString(),
+      sender:localStorage.getItem('userEmail'),
     };
-    // send email logic here
+    try{
+      const response = await fetch("https://authentication-mailwave-default-rtdb.firebaseio.com/emails.json",{
+        method:'POST',
+        headers:{
+          "Content-Type":"application/json",
+        },
+        body:JSON.stringify(emailData)
+      });
+      if(!response.ok){
+        throw new Error("Failed to send email");
+      }
+      alert("Email sent successfully");
+      setTo("");
+      setCc("");
+      setBcc("");
+      setSubject("");
+      setEditorState(EditorState.createEmpty());
+     }catch(error){
+      alert("Error sending email: " + error.message);
+     }
   };
 
   return (
@@ -43,7 +64,7 @@ const ComposeEmail = () => {
             type="text"
             id="from"
             readOnly
-            value="aman@gmail.com"
+            value={localStorage.getItem('userEmail')}
           />
         </div>
         <div className="border-b flex p-1 items-center">
